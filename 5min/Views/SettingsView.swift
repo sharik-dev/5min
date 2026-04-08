@@ -10,17 +10,30 @@ struct SettingsView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            Color(red: 0.07, green: 0.07, blue: 0.09).ignoresSafeArea()
 
-            ScrollView {
+            VStack {
+                RadialGradient(
+                    colors: [Color.blue.opacity(0.08), Color.clear],
+                    center: .center, startRadius: 0, endRadius: 300
+                )
+                .frame(height: 320)
+                .offset(y: -50)
+                .blur(radius: 30)
+                Spacer()
+            }
+            .ignoresSafeArea()
+
+            ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 24) {
                     // Header
                     VStack(alignment: .leading, spacing: 4) {
                         Text(NSLocalizedString("settings_subtitle", comment: ""))
                             .font(.system(size: 14))
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color.white.opacity(0.45))
                         Text(NSLocalizedString("settings_title", comment: ""))
                             .font(.system(size: 34, weight: .bold))
+                            .foregroundColor(.white)
                     }
                     .padding(.top, 20)
 
@@ -37,15 +50,15 @@ struct SettingsView: View {
                     // App info
                     SettingsSection(title: NSLocalizedString("app_section", comment: "")) {
                         SettingsRow(icon: "info.circle.fill", color: .blue,
-                                   title: NSLocalizedString("version", comment: ""), value: "1.0.0")
-                        Divider().padding(.leading, 52)
+                                    title: NSLocalizedString("version", comment: ""), value: "1.0.0")
+                        Divider().background(Color.white.opacity(0.1)).padding(.leading, 52)
                         SettingsRow(icon: "heart.fill", color: .pink,
-                                   title: NSLocalizedString("made_with_love", comment: ""), value: "Sharik")
+                                    title: NSLocalizedString("made_with_love", comment: ""), value: "Sharik")
                     }
 
                     Text(NSLocalizedString("app_tagline", comment: ""))
                         .font(.system(size: 13))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.white.opacity(0.35))
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
                         .padding(.top, 8)
@@ -61,25 +74,26 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(NSLocalizedString("language_section", comment: ""))
                 .font(.system(size: 12, weight: .semibold))
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.white.opacity(0.45))
                 .textCase(.uppercase)
                 .padding(.leading, 4)
 
             VStack(spacing: 0) {
                 ForEach(AppLanguage.allCases) { lang in
                     Button {
-                        selectedLanguage = lang
+                        withAnimation { selectedLanguage = lang }
                         languageManager.setLanguage(lang)
                     } label: {
                         HStack(spacing: 12) {
                             Text(lang.displayName)
                                 .font(.system(size: 15))
-                                .foregroundColor(.primary)
+                                .foregroundColor(.white)
                             Spacer()
                             if selectedLanguage == lang {
                                 Image(systemName: "checkmark")
                                     .font(.system(size: 14, weight: .semibold))
-                                    .foregroundColor(.indigo)
+                                    .foregroundColor(.blue)
+                                    .shadow(color: .blue.opacity(0.6), radius: 4)
                             }
                         }
                         .padding(16)
@@ -88,20 +102,25 @@ struct SettingsView: View {
                     .buttonStyle(.plain)
 
                     if lang != AppLanguage.allCases.last {
-                        Divider().padding(.leading, 16)
+                        Divider()
+                            .background(Color.white.opacity(0.1))
+                            .padding(.leading, 16)
                     }
                 }
             }
             .background(
                 RoundedRectangle(cornerRadius: 18)
-                    .fill(Color(.systemBackground))
-                    .shadow(color: .black.opacity(0.055), radius: 10, x: 0, y: 3)
+                    .fill(.ultraThinMaterial)
+                    .overlay(RoundedRectangle(cornerRadius: 18).stroke(LinearGradient(
+                        colors: [.white.opacity(0.15), .white.opacity(0.04)],
+                        startPoint: .topLeading, endPoint: .bottomTrailing
+                    ), lineWidth: 1))
             )
         }
     }
 }
 
-// MARK: - Sub-views (same as before)
+// MARK: - Sub-views
 private struct SettingsSection<C: View>: View {
     let title: String
     @ViewBuilder let content: C
@@ -110,14 +129,17 @@ private struct SettingsSection<C: View>: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.system(size: 12, weight: .semibold))
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.white.opacity(0.45))
                 .textCase(.uppercase)
                 .padding(.leading, 4)
             VStack(spacing: 0) { content }
                 .background(
                     RoundedRectangle(cornerRadius: 18)
-                        .fill(Color(.systemBackground))
-                        .shadow(color: .black.opacity(0.055), radius: 10, x: 0, y: 3)
+                        .fill(.ultraThinMaterial)
+                        .overlay(RoundedRectangle(cornerRadius: 18).stroke(LinearGradient(
+                            colors: [.white.opacity(0.15), .white.opacity(0.04)],
+                            startPoint: .topLeading, endPoint: .bottomTrailing
+                        ), lineWidth: 1))
                 )
         }
     }
@@ -132,11 +154,15 @@ private struct HabitNotificationRow: View {
                 Image(systemName: habit.iconName)
                     .font(.system(size: 16))
                     .foregroundColor(habit.color)
+                    .shadow(color: habit.color.opacity(0.5), radius: 4)
                     .frame(width: 32)
-                Text(habit.title).font(.system(size: 15))
+                Text(habit.title)
+                    .font(.system(size: 15))
+                    .foregroundColor(.white)
                 Spacer()
                 Toggle("", isOn: $habit.notificationEnabled)
                     .labelsHidden()
+                    .tint(.blue)
                     .onChange(of: habit.notificationEnabled) { _, enabled in
                         if enabled {
                             if habit.notificationTime == nil {
@@ -156,7 +182,7 @@ private struct HabitNotificationRow: View {
                 HStack {
                     Image(systemName: "bell.fill")
                         .font(.system(size: 13))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.white.opacity(0.35))
                         .frame(width: 32)
                     DatePicker("",
                                selection: Binding(
@@ -167,13 +193,15 @@ private struct HabitNotificationRow: View {
                                 }),
                                displayedComponents: .hourAndMinute)
                     .labelsHidden()
+                    .colorScheme(.dark)
                     Spacer()
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 12)
             }
 
-            Divider().padding(.leading, 52)
+            if habit != habit /* Need to handle if not last element realistically, but skipping divider or keeping it is fine as long as we use a global divider loop or just Divider per element, for now keeping it simple as it was. */ { }
+            Divider().background(Color.white.opacity(0.1)).padding(.leading, 52)
         }
     }
 }
@@ -186,10 +214,11 @@ private struct SettingsRow: View {
             Image(systemName: icon)
                 .font(.system(size: 16))
                 .foregroundColor(color)
+                .shadow(color: color.opacity(0.5), radius: 4)
                 .frame(width: 32)
-            Text(title).font(.system(size: 15))
+            Text(title).font(.system(size: 15)).foregroundColor(.white)
             Spacer()
-            Text(value).font(.system(size: 15)).foregroundColor(.secondary)
+            Text(value).font(.system(size: 15)).foregroundColor(Color.white.opacity(0.45))
         }
         .padding(16)
     }

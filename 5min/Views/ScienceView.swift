@@ -41,16 +41,29 @@ struct ScienceView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            Color(red: 0.07, green: 0.07, blue: 0.09).ignoresSafeArea()
 
-            ScrollView {
+            VStack {
+                RadialGradient(
+                    colors: [Color.purple.opacity(0.08), Color.clear],
+                    center: .center, startRadius: 0, endRadius: 300
+                )
+                .frame(height: 320)
+                .offset(x: -60)
+                .blur(radius: 30)
+                Spacer()
+            }
+            .ignoresSafeArea()
+
+            ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 20) {
                     VStack(alignment: .leading, spacing: 6) {
                         Text(NSLocalizedString("science_subtitle", comment: ""))
                             .font(.system(size: 14))
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color.white.opacity(0.45))
                         Text(NSLocalizedString("science_title", comment: ""))
                             .font(.system(size: 34, weight: .bold))
+                            .foregroundColor(.white)
                     }
                     .padding(.top, 20)
 
@@ -69,21 +82,23 @@ private struct IntroCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 10) {
-                Image(systemName: "lightbulb.fill").foregroundColor(.yellow)
+                Image(systemName: "lightbulb.fill")
+                    .foregroundColor(.yellow)
+                    .shadow(color: .yellow.opacity(0.6), radius: 5)
                 Text(NSLocalizedString("why_5min_title", comment: ""))
                     .font(.system(size: 15, weight: .semibold))
+                    .foregroundColor(.white)
             }
             Text(NSLocalizedString("why_5min_body", comment: ""))
                 .font(.system(size: 14))
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.white.opacity(0.6))
                 .lineSpacing(4)
         }
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 18)
                 .fill(Color.yellow.opacity(0.08))
-                .overlay(RoundedRectangle(cornerRadius: 18)
-                    .stroke(Color.yellow.opacity(0.2), lineWidth: 1))
+                .overlay(RoundedRectangle(cornerRadius: 18).stroke(Color.yellow.opacity(0.15), lineWidth: 1))
         )
     }
 }
@@ -96,19 +111,27 @@ private struct ScienceCard: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 12) {
                 ZStack {
-                    Circle().fill(entry.color.opacity(0.12)).frame(width: 46, height: 46)
+                    Circle()
+                        .fill(entry.color.opacity(0.15))
+                        .frame(width: 46, height: 46)
+                        .overlay(Circle().stroke(entry.color.opacity(0.3), lineWidth: 1))
                     Image(systemName: entry.icon)
                         .font(.system(size: 18))
                         .foregroundColor(entry.color)
+                        .shadow(color: entry.color.opacity(0.5), radius: 4)
                 }
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(entry.author).font(.system(size: 15, weight: .semibold))
-                    Text(entry.source).font(.system(size: 12)).foregroundColor(.secondary)
+                    Text(entry.author)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(.white)
+                    Text(entry.source)
+                        .font(.system(size: 12))
+                        .foregroundColor(Color.white.opacity(0.45))
                 }
                 Spacer()
                 Image(systemName: expanded ? "chevron.up" : "chevron.down")
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.white.opacity(0.4))
             }
             .padding(16)
             .contentShape(Rectangle())
@@ -120,23 +143,27 @@ private struct ScienceCard: View {
 
             if expanded {
                 VStack(alignment: .leading, spacing: 12) {
-                    Divider().padding(.horizontal, 16)
+                    Divider()
+                        .background(Color.white.opacity(0.1))
+                        .padding(.horizontal, 16)
 
                     HStack(alignment: .top, spacing: 10) {
                         Rectangle()
                             .fill(entry.color)
                             .frame(width: 3)
                             .cornerRadius(2)
+                            .shadow(color: entry.color.opacity(0.5), radius: 3)
                         Text("« \(NSLocalizedString(entry.quoteKey, comment: "")) »")
                             .font(.system(size: 14, weight: .medium, design: .serif))
                             .italic()
+                            .foregroundColor(.white)
                             .lineSpacing(4)
                     }
                     .padding(.horizontal, 16)
 
                     Text(NSLocalizedString(entry.explanationKey, comment: ""))
                         .font(.system(size: 13))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.white.opacity(0.5))
                         .lineSpacing(4)
                         .padding(.horizontal, 16)
                         .padding(.bottom, 16)
@@ -146,8 +173,11 @@ private struct ScienceCard: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 18)
-                .fill(Color(.systemBackground))
-                .shadow(color: .black.opacity(0.055), radius: 10, x: 0, y: 3)
+                .fill(.ultraThinMaterial)
+                .overlay(RoundedRectangle(cornerRadius: 18).stroke(LinearGradient(
+                    colors: [.white.opacity(0.15), .white.opacity(0.04)],
+                    startPoint: .topLeading, endPoint: .bottomTrailing
+                ), lineWidth: 1))
         )
         .clipped()
     }

@@ -2,14 +2,27 @@ import Foundation
 import Combine
 
 class TimerManager: ObservableObject {
-    static let duration: TimeInterval = 5 * 60
-
-    @Published var timeRemaining: TimeInterval = TimerManager.duration
+    @Published var timeRemaining: TimeInterval
     @Published var isRunning: Bool = false
     @Published var isFinished: Bool = false
     @Published var progress: Double = 0.0
 
+    private var totalDuration: TimeInterval
     private var cancellable: AnyCancellable?
+
+    init(minutes: Int = 5) {
+        self.totalDuration = TimeInterval(minutes * 60)
+        self.timeRemaining = self.totalDuration
+    }
+
+    func configure(minutes: Int) {
+        cancellable?.cancel()
+        isRunning = false
+        isFinished = false
+        totalDuration = TimeInterval(minutes * 60)
+        timeRemaining = totalDuration
+        progress = 0.0
+    }
 
     func start() {
         guard !isRunning && !isFinished else { return }
@@ -28,14 +41,14 @@ class TimerManager: ObservableObject {
         cancellable?.cancel()
         isRunning = false
         isFinished = false
-        timeRemaining = TimerManager.duration
+        timeRemaining = totalDuration
         progress = 0.0
     }
 
     private func tick() {
         guard timeRemaining > 0 else { finish(); return }
         timeRemaining = max(0, timeRemaining - 0.1)
-        progress = 1.0 - (timeRemaining / TimerManager.duration)
+        progress = 1.0 - (timeRemaining / totalDuration)
     }
 
     private func finish() {

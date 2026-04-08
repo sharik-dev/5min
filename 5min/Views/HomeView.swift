@@ -21,9 +21,25 @@ struct HomeView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            // Dark background matching navbar
+            Color(red: 0.07, green: 0.07, blue: 0.09).ignoresSafeArea()
 
-            ScrollView {
+            // Subtle ambient glow
+            VStack {
+                RadialGradient(
+                    colors: [Color.red.opacity(0.08), Color.clear],
+                    center: .center,
+                    startRadius: 0,
+                    endRadius: 300
+                )
+                .frame(height: 320)
+                .offset(x: 60)
+                .blur(radius: 30)
+                Spacer()
+            }
+            .ignoresSafeArea()
+
+            ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 24) {
                     headerSection
                     if !habits.isEmpty { progressRow }
@@ -34,8 +50,18 @@ struct HomeView: View {
                 .padding(.bottom, 130)
             }
         }
-        .sheet(isPresented: $showAddHabit) { HabitFormView() }
-        .sheet(item: $habitToEdit) { HabitFormView(habit: $0) }
+        .sheet(isPresented: $showAddHabit) {
+            AddHabitModal()
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .presentationBackground(Color(red: 0.07, green: 0.07, blue: 0.09))
+        }
+        .sheet(item: $habitToEdit) { habit in
+            AddHabitModal(habit: habit)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .presentationBackground(Color(red: 0.07, green: 0.07, blue: 0.09))
+        }
         .fullScreenCover(item: $habitForTimer) { TimerView(habit: $0) }
     }
 
@@ -45,17 +71,29 @@ struct HomeView: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(greeting)
                     .font(.system(size: 14))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.white.opacity(0.45))
                 Text("First5")
                     .font(.system(size: 34, weight: .bold))
+                    .foregroundColor(.white)
             }
             Spacer()
             Button { showAddHabit = true } label: {
                 ZStack {
-                    Circle().fill(Color.indigo).frame(width: 44, height: 44)
+                    Circle()
+                        .fill(.ultraThinMaterial)
+                        .overlay(
+                            Circle()
+                                .stroke(LinearGradient(
+                                    colors: [.white.opacity(0.45), .white.opacity(0.08)],
+                                    startPoint: .topLeading, endPoint: .bottomTrailing
+                                ), lineWidth: 1)
+                        )
+                        .shadow(color: .white.opacity(0.12), radius: 10, y: -4)
+                        .frame(width: 44, height: 44)
                     Image(systemName: "plus")
                         .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.white)
+                        .foregroundStyle(Color.red)
+                        .shadow(color: .red.opacity(0.7), radius: 5)
                 }
             }
         }
@@ -64,10 +102,10 @@ struct HomeView: View {
     // MARK: Progress
     private var progressRow: some View {
         HStack(spacing: 12) {
-            ProgressCard(value: "\(completedCount)/\(habits.count)",
+            GlassProgressCard(value: "\(completedCount)/\(habits.count)",
                          label: NSLocalizedString("completed_today", comment: ""),
                          icon: "checkmark.circle.fill", color: .green)
-            ProgressCard(value: "\(bestStreak)",
+            GlassProgressCard(value: "\(bestStreak)",
                          label: NSLocalizedString("best_streak", comment: ""),
                          icon: "flame.fill", color: .orange)
         }
@@ -81,6 +119,7 @@ struct HomeView: View {
             } else {
                 Text(NSLocalizedString("today_habits", comment: ""))
                     .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(.white)
 
                 ForEach(habits) { habit in
                     HabitCard(habit: habit) { habitForTimer = habit }
@@ -101,14 +140,21 @@ struct HomeView: View {
 
     private var emptyState: some View {
         VStack(spacing: 18) {
-            Image(systemName: "star.circle")
-                .font(.system(size: 60))
-                .foregroundColor(.indigo.opacity(0.45))
+            ZStack {
+                Circle()
+                    .fill(Color.red.opacity(0.08))
+                    .frame(width: 100, height: 100)
+                Image(systemName: "star.circle")
+                    .font(.system(size: 52))
+                    .foregroundColor(.red.opacity(0.6))
+                    .shadow(color: .red.opacity(0.4), radius: 10)
+            }
             Text(NSLocalizedString("no_habits_title", comment: ""))
                 .font(.system(size: 20, weight: .semibold))
+                .foregroundColor(.white)
             Text(NSLocalizedString("no_habits_subtitle", comment: ""))
                 .font(.system(size: 15))
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.white.opacity(0.45))
                 .multilineTextAlignment(.center)
             Button { showAddHabit = true } label: {
                 Text(NSLocalizedString("add_first_habit", comment: ""))
@@ -116,7 +162,12 @@ struct HomeView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 28)
                     .padding(.vertical, 14)
-                    .background(Capsule().fill(Color.indigo))
+                    .background(
+                        Capsule()
+                            .fill(.ultraThinMaterial)
+                            .overlay(Capsule().stroke(Color.red.opacity(0.5), lineWidth: 1))
+                    )
+                    .shadow(color: .red.opacity(0.25), radius: 10)
             }
         }
         .frame(maxWidth: .infinity)
@@ -124,7 +175,8 @@ struct HomeView: View {
     }
 }
 
-private struct ProgressCard: View {
+// MARK: - Glass Progress Card
+private struct GlassProgressCard: View {
     let value: String
     let label: String
     let icon: String
@@ -135,17 +187,29 @@ private struct ProgressCard: View {
             Image(systemName: icon)
                 .font(.system(size: 22))
                 .foregroundColor(color)
+                .shadow(color: color.opacity(0.6), radius: 6)
             VStack(alignment: .leading, spacing: 2) {
-                Text(value).font(.system(size: 22, weight: .bold))
-                Text(label).font(.system(size: 12)).foregroundColor(.secondary)
+                Text(value)
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundColor(.white)
+                Text(label)
+                    .font(.system(size: 12))
+                    .foregroundColor(Color.white.opacity(0.45))
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 18)
-                .fill(Color(.systemBackground))
-                .shadow(color: .black.opacity(0.055), radius: 10, x: 0, y: 3)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 18)
+                        .stroke(LinearGradient(
+                            colors: [.white.opacity(0.25), .white.opacity(0.05)],
+                            startPoint: .topLeading, endPoint: .bottomTrailing
+                        ), lineWidth: 1)
+                )
+                .shadow(color: .black.opacity(0.3), radius: 12, y: 4)
         )
     }
 }

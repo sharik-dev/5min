@@ -11,12 +11,15 @@ struct TimerView: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(
-                colors: [habit.color.opacity(0.18), Color(.systemBackground)],
-                startPoint: .top, endPoint: .bottom
+            Color(red: 0.07, green: 0.07, blue: 0.09).ignoresSafeArea()
+            
+            // Background Glow
+            RadialGradient(
+                colors: [habit.color.opacity(0.15), Color.clear],
+                center: .center, startRadius: 50, endRadius: 400
             )
             .ignoresSafeArea()
-
+            
             VStack(spacing: 0) {
                 // Header
                 HStack {
@@ -25,20 +28,22 @@ struct TimerView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundColor(.secondary)
-                            .padding(11)
-                            .background(Circle().fill(Color(.systemFill)))
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.white)
+                            .frame(width: 44, height: 44)
+                            .background(Circle().fill(Color.white.opacity(0.1)))
                     }
                     Spacer()
                     HStack(spacing: 8) {
                         Image(systemName: habit.iconName)
                             .foregroundColor(habit.color)
+                            .shadow(color: habit.color.opacity(0.5), radius: 4)
                         Text(habit.title)
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(.system(size: 17, weight: .bold))
+                            .foregroundColor(.white)
                     }
                     Spacer()
-                    Color.clear.frame(width: 38, height: 38)
+                    Color.clear.frame(width: 44, height: 44)
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 20)
@@ -47,16 +52,20 @@ struct TimerView: View {
 
                 // Circular timer
                 ZStack {
-                    CircularProgressView(progress: timer.progress, color: habit.color, lineWidth: 16)
-                        .frame(width: 270, height: 270)
+                    CircularProgressView(progress: timer.progress, color: habit.color, lineWidth: 18)
+                        .frame(width: 300, height: 300)
+                        .shadow(color: habit.color.opacity(0.3), radius: 20)
 
                     VStack(spacing: 8) {
                         Text(timer.formattedTime)
-                            .font(.system(size: 62, weight: .thin, design: .rounded))
+                            .font(.system(size: 72, weight: .thin, design: .rounded))
                             .monospacedDigit()
+                            .foregroundColor(.white)
+                            .shadow(color: habit.color.opacity(0.4), radius: 10)
+                        
                         Text(NSLocalizedString("minutes_focus", comment: ""))
-                            .font(.system(size: 14))
-                            .foregroundColor(.secondary)
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(Color.white.opacity(0.5))
                     }
                 }
 
@@ -64,21 +73,21 @@ struct TimerView: View {
 
                 // Motivation
                 Text(NSLocalizedString("timer_motivation", comment: ""))
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundColor(.secondary)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(Color.white.opacity(0.6))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 48)
 
                 Spacer()
 
                 // Controls
-                HStack(spacing: 28) {
+                HStack(spacing: 32) {
                     Button { timer.reset() } label: {
                         Image(systemName: "arrow.counterclockwise")
                             .font(.system(size: 20))
-                            .foregroundColor(.secondary)
-                            .padding(18)
-                            .background(Circle().fill(Color(.systemFill)))
+                            .foregroundColor(.white)
+                            .frame(width: 60, height: 60)
+                            .background(Circle().fill(Color.white.opacity(0.1)))
                     }
 
                     Button {
@@ -88,18 +97,21 @@ struct TimerView: View {
                         ZStack {
                             Circle()
                                 .fill(habit.color)
-                                .frame(width: 84, height: 84)
-                                .shadow(color: habit.color.opacity(0.4), radius: 14, x: 0, y: 5)
+                                .frame(width: 88, height: 88)
+                                .shadow(color: habit.color.opacity(0.5), radius: 16, x: 0, y: 6)
                             Image(systemName: timer.isRunning ? "pause.fill" : "play.fill")
-                                .font(.system(size: 30))
+                                .font(.system(size: 34))
                                 .foregroundColor(.white)
                         }
                     }
 
-                    Color.clear.frame(width: 56, height: 56)
+                    Color.clear.frame(width: 60, height: 60)
                 }
-                .padding(.bottom, 56)
+                .padding(.bottom, 60)
             }
+        }
+        .onAppear {
+            timer.configure(minutes: habit.timerDuration)
         }
         .onChange(of: timer.isFinished) { _, finished in
             if finished {
@@ -109,6 +121,9 @@ struct TimerView: View {
         }
         .sheet(isPresented: $showCompletion) {
             CompletionView(habit: habit) { dismiss() }
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .presentationBackground(Color(red: 0.07, green: 0.07, blue: 0.09))
         }
     }
 
@@ -128,61 +143,82 @@ struct CompletionView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            // Drag indicator
+            Capsule()
+                .fill(Color.white.opacity(0.18))
+                .frame(width: 36, height: 4)
+                .padding(.top, 12)
+                .padding(.bottom, 30)
+
             Spacer()
 
             ZStack {
                 Circle()
-                    .fill(habit.color.opacity(0.12))
-                    .frame(width: 130, height: 130)
-                Text("🎉").font(.system(size: 64))
+                    .fill(habit.color.opacity(0.15))
+                    .frame(width: 140, height: 140)
+                    .overlay(Circle().stroke(habit.color.opacity(0.3), lineWidth: 1.5))
+                    .shadow(color: habit.color.opacity(0.4), radius: 15)
+                Text("🎉").font(.system(size: 70))
             }
-            .padding(.bottom, 28)
+            .padding(.bottom, 30)
 
             Text(NSLocalizedString("completion_title", comment: ""))
-                .font(.system(size: 26, weight: .bold))
+                .font(.system(size: 28, weight: .bold))
+                .foregroundColor(.white)
                 .multilineTextAlignment(.center)
                 .padding(.bottom, 12)
 
             Text(NSLocalizedString("completion_message", comment: ""))
                 .font(.system(size: 16))
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.white.opacity(0.6))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 36)
 
             if habit.streak > 0 {
                 HStack(spacing: 8) {
-                    Image(systemName: "flame.fill").foregroundColor(.orange)
+                    Image(systemName: "flame.fill")
+                        .foregroundColor(.orange)
+                        .shadow(color: .orange.opacity(0.5), radius: 4)
                     Text(String(format: NSLocalizedString("streak_congrats", comment: ""), habit.streak))
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.white)
                 }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 12)
-                .background(Capsule().fill(Color.orange.opacity(0.11)))
-                .padding(.top, 20)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 14)
+                .background(
+                    Capsule()
+                        .fill(.ultraThinMaterial)
+                        .overlay(Capsule().stroke(Color.orange.opacity(0.3), lineWidth: 1))
+                )
+                .padding(.top, 24)
             }
 
             Spacer()
 
-            VStack(spacing: 14) {
+            VStack(spacing: 16) {
                 Button { onDismiss() } label: {
                     Text(NSLocalizedString("stop_here", comment: ""))
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(.system(size: 18, weight: .bold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 18)
-                        .background(RoundedRectangle(cornerRadius: 18).fill(habit.color))
+                        .padding(.vertical, 20)
+                        .background(
+                            RoundedRectangle(cornerRadius: 18)
+                                .fill(habit.color)
+                                .shadow(color: habit.color.opacity(0.5), radius: 12, y: 5)
+                        )
                 }
 
                 Button { onDismiss() } label: {
                     Text(NSLocalizedString("keep_going", comment: ""))
-                        .font(.system(size: 17, weight: .medium))
-                        .foregroundColor(.secondary)
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(Color.white.opacity(0.5))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
                 }
             }
             .padding(.horizontal, 32)
             .padding(.bottom, 44)
         }
-        .presentationDetents([.large])
-        .presentationDragIndicator(.visible)
     }
 }

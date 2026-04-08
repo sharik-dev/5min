@@ -7,6 +7,7 @@ struct ContentView: View {
         Group {
             switch selectedTab {
             case .home:     HomeView()
+            case .streaks:  StreaksView()
             case .science:  ScienceView()
             case .settings: SettingsView()
             }

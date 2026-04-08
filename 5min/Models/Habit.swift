@@ -10,15 +10,17 @@ final class Habit {
     var colorHex: String = "5E5CE6"
     var notificationTime: Date?
     var notificationEnabled: Bool = false
+    var timerDuration: Int = 5  // minutes
     var createdAt: Date = Date()
     @Relationship(deleteRule: .cascade) var completions: [HabitCompletion] = []
 
-    init(title: String, iconName: String, colorHex: String) {
+    init(title: String, iconName: String, colorHex: String, timerDuration: Int = 5) {
         self.id = UUID()
         self.title = title
         self.iconName = iconName
         self.colorHex = colorHex
         self.notificationEnabled = false
+        self.timerDuration = timerDuration
         self.createdAt = Date()
         self.completions = []
     }
