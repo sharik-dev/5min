@@ -1,0 +1,90 @@
+/* Tab Bar */
+"tab_home" = "Home";
+"tab_science" = "Science";
+"tab_settings" = "Settings";
+
+/* Greetings */
+"good_morning" = "Good morning";
+"good_afternoon" = "Good afternoon";
+"good_evening" = "Good evening";
+
+/* Home */
+"completed_today" = "Done today";
+"best_streak" = "Best streak";
+"today_habits" = "My habits";
+"no_habits_title" = "No habits yet";
+"no_habits_subtitle" = "Create your first habit and start your 5-minute journey.";
+"add_first_habit" = "Add my first habit";
+"streak_days" = "%d-day streak";
+"no_streak" = "Start your streak";
+"edit" = "Edit";
+"delete" = "Delete";
+
+/* Notifications */
+"notification_body" = "Time for your 5 minutes of \"%@\" 🚀";
+
+/* Timer */
+"minutes_focus" = "minutes of focus";
+"timer_motivation" = "Just start. The hardest part is already behind you.";
+
+/* Completion */
+"completion_title" = "You did it! 🎉";
+"completion_message" = "You tackled the hardest part.\nWant to keep going or stop here?";
+"streak_congrats" = "%d-day streak! Keep it up!";
+"stop_here" = "That's enough for today";
+"keep_going" = "I want to keep going →";
+
+/* Science */
+"science_title" = "The Science";
+"science_subtitle" = "Why 5 minutes?";
+"why_5min_title" = "Why just 5 minutes?";
+"why_5min_body" = "Research shows that the biggest obstacle to any task is starting it. Once you begin, you're naturally drawn to continue. 5 minutes is enough to break that mental resistance.";
+
+"science_zeigarnik_source" = "Psychological Research, 1927";
+"science_zeigarnik_quote" = "Unfinished tasks remain active in our memory long after completed tasks have faded.";
+"science_zeigarnik_explanation" = "Bluma Zeigarnik discovered that starting a task — even briefly — creates an open mental loop that keeps you engaged and motivated to return. 5 minutes is all it takes to activate this effect.";
+
+"science_clear_quote" = "You don't rise to the level of your goals. You fall to the level of your systems. 5 minutes is your system.";
+"science_clear_explanation" = "James Clear demonstrates that motivation follows action, not the other way around. By committing to just 5 minutes, you eliminate the friction that blocks you from starting — and once started, momentum carries you forward.";
+
+"science_huberman_quote" = "Dopamine is released in anticipation of a reward, not just upon receiving it. Starting a task triggers this internal reward mechanism.";
+"science_huberman_explanation" = "Dr. Huberman explains that simply beginning a task triggers dopamine release, creating a natural motivation loop. 5 minutes is enough to activate this neurochemical response and build genuine drive.";
+
+"science_fogg_quote" = "Make it tiny. When you make a behavior tiny enough, it becomes easy to do — and easy to repeat.";
+"science_fogg_explanation" = "BJ Fogg's research shows that reducing friction by making habits small is the key to making them stick. 5 minutes removes the 'it's too hard' objection and lets you build real consistency.";
+
+"science_steel_source" = "The Procrastination Equation, 2011";
+"science_steel_quote" = "Procrastination increases with temporal distance. The further away the deadline, the more we delay. Starting now collapses that distance to zero.";
+"science_steel_explanation" = "Dr. Steel's procrastination equation shows that immediacy is the antidote to delay. Committing to 5 minutes right now forces you into the present moment and breaks the cycle of postponement.";
+
+/* Habit Form */
+"edit_habit" = "Edit Habit";
+"new_habit" = "New Habit";
+"cancel" = "Cancel";
+"habit_preview_title" = "Your habit name";
+"habit_name" = "Name";
+"habit_name_placeholder" = "E.g. Morning meditation";
+"habit_icon" = "Icon";
+"habit_color" = "Color";
+"save_changes" = "Save changes";
+"create_habit" = "Create habit";
+
+/* Language */
+"language_section" = "Language";
+"language_system" = "System";
+
+/* Settings */
+"notifications_section" = "Reminders";
+"app_section" = "App";
+"version" = "Version";
+"made_with_love" = "Developed by";
+"app_tagline" = "Start small. Build big.\nFirst5 — Just 5 minutes a day.";
+"settings_title" = "Settings";
+"settings_subtitle" = "Configure";
+
+/* Widget */
+"widget_next" = "Next";
+"widget_all_done" = "All done! 🎉";
+"widget_no_habits" = "No habits yet";
+"widget_small_description" = "Shows your next habit to complete";
+"widget_medium_description" = "Lists all your habits for the day";

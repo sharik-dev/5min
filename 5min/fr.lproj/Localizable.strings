@@ -1,0 +1,90 @@
+/* Barre de navigation */
+"tab_home" = "Accueil";
+"tab_science" = "Science";
+"tab_settings" = "Réglages";
+
+/* Salutations */
+"good_morning" = "Bonjour";
+"good_afternoon" = "Bon après-midi";
+"good_evening" = "Bonsoir";
+
+/* Accueil */
+"completed_today" = "Faites aujourd'hui";
+"best_streak" = "Meilleure série";
+"today_habits" = "Mes habitudes";
+"no_habits_title" = "Aucune habitude";
+"no_habits_subtitle" = "Crée ta première habitude et commence ton voyage de 5 minutes.";
+"add_first_habit" = "Ajouter ma première habitude";
+"streak_days" = "%d jour(s) d'affilée";
+"no_streak" = "Commence ta série";
+"edit" = "Modifier";
+"delete" = "Supprimer";
+
+/* Notifications */
+"notification_body" = "C'est l'heure de tes 5 minutes pour \"%@\" 🚀";
+
+/* Minuteur */
+"minutes_focus" = "minutes de concentration";
+"timer_motivation" = "Lance-toi. Le plus dur est déjà derrière toi.";
+
+/* Fin de session */
+"completion_title" = "Tu l'as fait ! 🎉";
+"completion_message" = "Tu as fait le plus dur.\nVeux-tu continuer ou t'arrêter là ?";
+"streak_congrats" = "%d jour(s) d'affilée ! Continue !";
+"stop_here" = "Je m'arrête là pour aujourd'hui";
+"keep_going" = "Je veux continuer →";
+
+/* Science */
+"science_title" = "La Science";
+"science_subtitle" = "Pourquoi 5 minutes ?";
+"why_5min_title" = "Pourquoi seulement 5 minutes ?";
+"why_5min_body" = "La recherche montre que le plus grand obstacle à une tâche est de la commencer. Une fois que l'on commence, on est naturellement porté à continuer. 5 minutes suffisent à briser cette résistance mentale.";
+
+"science_zeigarnik_source" = "Recherche Psychologique, 1927";
+"science_zeigarnik_quote" = "Les tâches inachevées restent actives dans notre mémoire longtemps après que les tâches terminées se soient effacées.";
+"science_zeigarnik_explanation" = "Bluma Zeigarnik a découvert que commencer une tâche — même brièvement — crée une boucle mentale ouverte qui maintient l'engagement et motive à revenir. 5 minutes suffisent à activer cet effet.";
+
+"science_clear_quote" = "Tu ne t'élèves pas au niveau de tes objectifs. Tu tombes au niveau de tes systèmes. 5 minutes, c'est ton système.";
+"science_clear_explanation" = "James Clear démontre que la motivation suit l'action, pas l'inverse. En s'engageant sur seulement 5 minutes, on supprime la friction qui bloque le démarrage — et une fois lancé, l'élan prend le relais.";
+
+"science_huberman_quote" = "La dopamine est libérée en anticipation d'une récompense, pas seulement à sa réception. Commencer une tâche déclenche ce mécanisme de récompense interne.";
+"science_huberman_explanation" = "Le Dr. Huberman explique que le simple fait de commencer une tâche déclenche la libération de dopamine, créant une boucle de motivation naturelle. 5 minutes suffisent à activer cette réponse neurochimique.";
+
+"science_fogg_quote" = "Rends-le minuscule. Quand un comportement est suffisamment petit, il devient facile à faire — et facile à répéter.";
+"science_fogg_explanation" = "La recherche de BJ Fogg montre que réduire la friction en rendant les habitudes petites est la clé pour les ancrer. 5 minutes supprime l'objection 'c'est trop difficile' et permet de construire une vraie régularité.";
+
+"science_steel_source" = "L'Équation de la Procrastination, 2011";
+"science_steel_quote" = "La procrastination augmente avec la distance temporelle. Plus l'échéance est lointaine, plus on tarde. Commencer maintenant réduit cette distance à zéro.";
+"science_steel_explanation" = "L'équation de la procrastination du Dr. Steel montre que l'immédiateté est l'antidote au report. S'engager sur 5 minutes maintenant te force dans le moment présent et brise le cycle du report.";
+
+/* Formulaire d'habitude */
+"edit_habit" = "Modifier l'habitude";
+"new_habit" = "Nouvelle habitude";
+"cancel" = "Annuler";
+"habit_preview_title" = "Le nom de ton habitude";
+"habit_name" = "Nom";
+"habit_name_placeholder" = "Ex : Méditation matinale";
+"habit_icon" = "Icône";
+"habit_color" = "Couleur";
+"save_changes" = "Enregistrer les modifications";
+"create_habit" = "Créer l'habitude";
+
+/* Langue */
+"language_section" = "Langue";
+"language_system" = "Système";
+
+/* Réglages */
+"notifications_section" = "Rappels";
+"app_section" = "Application";
+"version" = "Version";
+"made_with_love" = "Développé par";
+"app_tagline" = "Commencer petit. Viser grand.\nFirst5 — Juste 5 minutes par jour.";
+"settings_title" = "Réglages";
+"settings_subtitle" = "Configuration";
+
+/* Widget */
+"widget_next" = "Prochain";
+"widget_all_done" = "Tout fait ! 🎉";
+"widget_no_habits" = "Aucune habitude";
+"widget_small_description" = "Affiche ta prochaine habitude à compléter";
+"widget_medium_description" = "Liste toutes tes habitudes du jour";

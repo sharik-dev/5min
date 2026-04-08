@@ -1,16 +1,19 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var selectedTab: AppTab = .home
+
     var body: some View {
-        VStack {
-            Image(systemName: "swift")
-                .imageScale(.large)
-                .foregroundStyle(.orange)
-            Text("5min")
-                .font(.largeTitle)
-                .bold()
+        Group {
+            switch selectedTab {
+            case .home:     HomeView()
+            case .science:  ScienceView()
+            case .settings: SettingsView()
+            }
         }
-        .padding()
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            FloatingTabBar(selectedTab: $selectedTab)
+        }
     }
 }
 
