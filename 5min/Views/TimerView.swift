@@ -4,6 +4,7 @@ import SwiftData
 struct TimerView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject private var timer = TimerManager()
 
     let habit: Habit
@@ -112,6 +113,12 @@ struct TimerView: View {
         }
         .onAppear {
             timer.configure(minutes: habit.timerDuration)
+            timer.setHabitInfo(name: habit.title, icon: habit.iconName, colorHex: habit.colorHex)
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                timer.handleForeground()
+            }
         }
         .onChange(of: timer.isFinished) { _, finished in
             if finished {
