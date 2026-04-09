@@ -1,11 +1,8 @@
 import SwiftUI
-import SwiftData
 
 struct TimerView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
-    @Environment(\.scenePhase) private var scenePhase
-    @StateObject private var timer = TimerManager()
+    @EnvironmentObject private var timer: TimerManager
 
     let habit: Habit
     @State private var showCompletion = false
@@ -13,28 +10,27 @@ struct TimerView: View {
     var body: some View {
         ZStack {
             Color(red: 0.07, green: 0.07, blue: 0.09).ignoresSafeArea()
-            
-            // Background Glow
+
             RadialGradient(
                 colors: [habit.color.opacity(0.15), Color.clear],
-                center: .center, startRadius: 50, endRadius: 400
+                center: .center,
+                startRadius: 50,
+                endRadius: 400
             )
             .ignoresSafeArea()
-            
+
             VStack(spacing: 0) {
-                // Header
                 HStack {
-                    Button {
-                        timer.reset()
-                        dismiss()
-                    } label: {
+                    Button(action: closeTimer) {
                         Image(systemName: "xmark")
                             .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(.white)
                             .frame(width: 44, height: 44)
                             .background(Circle().fill(Color.white.opacity(0.1)))
                     }
+
                     Spacer()
+
                     HStack(spacing: 8) {
                         Image(systemName: habit.iconName)
                             .foregroundColor(habit.color)
@@ -43,7 +39,9 @@ struct TimerView: View {
                             .font(.system(size: 17, weight: .bold))
                             .foregroundColor(.white)
                     }
+
                     Spacer()
+
                     Color.clear.frame(width: 44, height: 44)
                 }
                 .padding(.horizontal, 20)
@@ -51,7 +49,6 @@ struct TimerView: View {
 
                 Spacer()
 
-                // Circular timer
                 ZStack {
                     CircularProgressView(progress: timer.progress, color: habit.color, lineWidth: 18)
                         .frame(width: 300, height: 300)
@@ -63,7 +60,7 @@ struct TimerView: View {
                             .monospacedDigit()
                             .foregroundColor(.white)
                             .shadow(color: habit.color.opacity(0.4), radius: 10)
-                        
+
                         Text(NSLocalizedString("minutes_focus", comment: ""))
                             .font(.system(size: 16, weight: .medium))
                             .foregroundColor(Color.white.opacity(0.5))
@@ -72,7 +69,6 @@ struct TimerView: View {
 
                 Spacer()
 
-                // Motivation
                 Text(NSLocalizedString("timer_motivation", comment: ""))
                     .font(.system(size: 16, weight: .medium))
                     .foregroundColor(Color.white.opacity(0.6))
@@ -81,9 +77,11 @@ struct TimerView: View {
 
                 Spacer()
 
-                // Controls
                 HStack(spacing: 32) {
-                    Button { timer.reset() } label: {
+                    Button {
+                        timer.reset()
+                        dismiss()
+                    } label: {
                         Image(systemName: "arrow.counterclockwise")
                             .font(.system(size: 20))
                             .foregroundColor(.white)
@@ -92,8 +90,11 @@ struct TimerView: View {
                     }
 
                     Button {
-                        if timer.isRunning { timer.pause() }
-                        else { timer.start() }
+                        if timer.isRunning {
+                            timer.pause()
+                        } else {
+                            timer.start()
+                        }
                     } label: {
                         ZStack {
                             Circle()
@@ -112,45 +113,40 @@ struct TimerView: View {
             }
         }
         .onAppear {
-            timer.configure(minutes: habit.timerDuration)
-            timer.setHabitInfo(name: habit.title, icon: habit.iconName, colorHex: habit.colorHex)
-        }
-        .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .active {
-                timer.handleForeground()
-            }
+            timer.present(for: habit)
         }
         .onChange(of: timer.isFinished) { _, finished in
             if finished {
-                completeHabit()
                 showCompletion = true
             }
         }
         .sheet(isPresented: $showCompletion) {
-            CompletionView(habit: habit) { dismiss() }
-                .presentationDetents([.large])
-                .presentationDragIndicator(.visible)
-                .presentationBackground(Color(red: 0.07, green: 0.07, blue: 0.09))
+            CompletionView(habit: habit) {
+                timer.reset()
+                dismiss()
+            }
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
+            .presentationBackground(Color(red: 0.07, green: 0.07, blue: 0.09))
         }
     }
 
-    private func completeHabit() {
-        guard !habit.isCompletedToday else { return }
-        let c = HabitCompletion(completedAt: Date())
-        c.habit = habit
-        habit.completions.append(c)
-        modelContext.insert(c)
+    private func closeTimer() {
+        let shouldReset = !timer.hasActiveSession
+        timer.dismissDetail()
+        if shouldReset {
+            timer.reset()
+        }
+        dismiss()
     }
 }
 
-// MARK: - Completion Sheet
 struct CompletionView: View {
     let habit: Habit
     let onDismiss: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {
-            // Drag indicator
             Capsule()
                 .fill(Color.white.opacity(0.18))
                 .frame(width: 36, height: 4)
@@ -203,7 +199,7 @@ struct CompletionView: View {
             Spacer()
 
             VStack(spacing: 16) {
-                Button { onDismiss() } label: {
+                Button(action: onDismiss) {
                     Text(NSLocalizedString("stop_here", comment: ""))
                         .font(.system(size: 18, weight: .bold))
                         .foregroundColor(.white)
@@ -216,7 +212,7 @@ struct CompletionView: View {
                         )
                 }
 
-                Button { onDismiss() } label: {
+                Button(action: onDismiss) {
                     Text(NSLocalizedString("keep_going", comment: ""))
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundColor(Color.white.opacity(0.5))

@@ -2,12 +2,12 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
+    @EnvironmentObject private var timer: TimerManager
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Habit.createdAt) private var habits: [Habit]
 
     @State private var showAddHabit = false
     @State private var habitToEdit: Habit?
-    @State private var habitForTimer: Habit?
 
     private var greeting: String {
         let h = Calendar.current.component(.hour, from: Date())
@@ -62,7 +62,6 @@ struct HomeView: View {
                 .presentationDragIndicator(.visible)
                 .presentationBackground(Color(red: 0.07, green: 0.07, blue: 0.09))
         }
-        .fullScreenCover(item: $habitForTimer) { TimerView(habit: $0) }
     }
 
     // MARK: Header
@@ -122,7 +121,7 @@ struct HomeView: View {
                     .foregroundColor(.white)
 
                 ForEach(habits) { habit in
-                    HabitCard(habit: habit) { habitForTimer = habit }
+                    HabitCard(habit: habit) { timer.present(for: habit) }
                         .contextMenu {
                             Button { habitToEdit = habit } label: {
                                 Label(NSLocalizedString("edit", comment: ""), systemImage: "pencil")

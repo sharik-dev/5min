@@ -7,14 +7,14 @@ class TimerManager: ObservableObject {
     @Published var isRunning: Bool = false
     @Published var isFinished: Bool = false
     @Published var progress: Double = 0.0
+    @Published var currentHabit: Habit?
+    @Published var isDetailPresented: Bool = false
+    @Published var lastCompletedHabitID: UUID?
 
     private var totalDuration: TimeInterval
     private var cancellable: AnyCancellable?
-
-    // Date-based tracking — accurate after background/foreground cycles
     private var endDate: Date?
 
-    // Live Activity
     private var activity: Activity<TimerActivityAttributes>?
     private var habitName: String = ""
     private var habitIcon: String = ""
@@ -33,15 +33,43 @@ class TimerManager: ObservableObject {
 
     // MARK: - Configuration
 
-    func configure(minutes: Int) {
+    func configure(minutes: Int, habit: Habit? = nil) {
         cancellable?.cancel()
+        cancellable = nil
         stopLiveActivity()
+        NotificationManager.shared.cancelTimerCompletion()
+
         isRunning = false
         isFinished = false
         totalDuration = TimeInterval(minutes * 60)
         timeRemaining = totalDuration
         progress = 0.0
         endDate = nil
+        currentHabit = habit
+        lastCompletedHabitID = nil
+
+        if let habit {
+            setHabitInfo(name: habit.title, icon: habit.iconName, colorHex: habit.colorHex)
+        } else {
+            habitName = ""
+            habitIcon = ""
+            habitColorHex = "5E5CE6"
+        }
+    }
+
+    func present(for habit: Habit) {
+        let isSameHabit = currentHabit?.id == habit.id
+        if !isSameHabit {
+            configure(minutes: habit.timerDuration, habit: habit)
+        } else {
+            currentHabit = habit
+            setHabitInfo(name: habit.title, icon: habit.iconName, colorHex: habit.colorHex)
+        }
+        isDetailPresented = true
+    }
+
+    func dismissDetail() {
+        isDetailPresented = false
     }
 
     func setHabitInfo(name: String, icon: String, colorHex: String) {
@@ -50,13 +78,21 @@ class TimerManager: ObservableObject {
         habitColorHex = colorHex
     }
 
+    func clearCompletionFlag() {
+        lastCompletedHabitID = nil
+    }
+
     // MARK: - Controls
 
     func start() {
-        guard !isRunning && !isFinished else { return }
+        guard currentHabit != nil, !isRunning && !isFinished else { return }
+
         isRunning = true
-        // Recalculate endDate each time we (re)start so paused time is correct
         endDate = Date().addingTimeInterval(timeRemaining)
+        NotificationManager.shared.scheduleTimerCompletion(
+            title: habitName.isEmpty ? "First5" : habitName,
+            seconds: timeRemaining
+        )
 
         if activity != nil {
             updateLiveActivity(isPaused: false)
@@ -74,27 +110,27 @@ class TimerManager: ObservableObject {
         isRunning = false
         cancellable?.cancel()
         cancellable = nil
+        NotificationManager.shared.cancelTimerCompletion()
         updateLiveActivity(isPaused: true)
     }
 
     func reset() {
-        cancellable?.cancel()
-        cancellable = nil
-        stopLiveActivity()
-        isRunning = false
-        isFinished = false
-        timeRemaining = totalDuration
-        progress = 0.0
-        endDate = nil
+        guard let habit = currentHabit else {
+            configure(minutes: Int(totalDuration / 60))
+            isDetailPresented = false
+            return
+        }
+
+        configure(minutes: habit.timerDuration, habit: nil)
+        currentHabit = nil
+        isDetailPresented = false
     }
 
-    // Called from TimerView when the app returns to foreground (scenePhase → active)
     func handleForeground() {
         guard isRunning, let end = endDate else { return }
         if end.timeIntervalSinceNow <= 0 {
             finish()
         }
-        // If still running, the next tick() will sync timeRemaining from endDate
     }
 
     // MARK: - Private
@@ -102,12 +138,18 @@ class TimerManager: ObservableObject {
     private func tick() {
         guard let end = endDate else { return }
         let remaining = end.timeIntervalSinceNow
-        guard remaining > 0 else { finish(); return }
+        guard remaining > 0 else {
+            finish()
+            return
+        }
+
         timeRemaining = remaining
         progress = 1.0 - (timeRemaining / totalDuration)
     }
 
     private func finish() {
+        let completedHabitID = currentHabit?.id
+
         cancellable?.cancel()
         cancellable = nil
         isRunning = false
@@ -115,7 +157,12 @@ class TimerManager: ObservableObject {
         timeRemaining = 0
         progress = 1.0
         endDate = nil
+        NotificationManager.shared.cancelTimerCompletion()
         endLiveActivity()
+
+        lastCompletedHabitID = completedHabitID
+        isDetailPresented = false
+        currentHabit = nil
     }
 
     // MARK: - Live Activity
@@ -147,7 +194,7 @@ class TimerManager: ObservableObject {
         guard let act = activity else { return }
         let state = TimerActivityAttributes.ContentState(
             endDate: isPaused
-                ? Date().addingTimeInterval(timeRemaining) // safe future date even when paused
+                ? Date().addingTimeInterval(timeRemaining)
                 : (endDate ?? Date().addingTimeInterval(timeRemaining)),
             isPaused: isPaused,
             pausedSecondsRemaining: timeRemaining
@@ -179,5 +226,14 @@ class TimerManager: ObservableObject {
     var formattedTime: String {
         let total = Int(ceil(timeRemaining))
         return String(format: "%02d:%02d", total / 60, total % 60)
+    }
+
+    var hasActiveSession: Bool {
+        guard currentHabit != nil else { return false }
+        return isRunning || timeRemaining < totalDuration || progress > 0
+    }
+
+    var shouldShowInAppBanner: Bool {
+        hasActiveSession && !isDetailPresented
     }
 }

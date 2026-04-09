@@ -4,6 +4,7 @@ import SwiftData
 @main
 struct First5App: App {
     @StateObject private var languageManager = LanguageManager.shared
+    @StateObject private var timerManager = TimerManager()
 
     init() {
         NotificationManager.shared.requestPermission()
@@ -14,6 +15,7 @@ struct First5App: App {
             ContentView()
                 .id(languageManager.refreshID)
                 .environmentObject(languageManager)
+                .environmentObject(timerManager)
         }
         .modelContainer(for: [Habit.self, HabitCompletion.self])
     }
