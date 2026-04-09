@@ -51,20 +51,22 @@ struct TimerLiveActivity: Widget {
                     .padding(.leading, 4)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    Group {
-                        if context.state.isPaused {
-                            Text(formatPausedTime(context.state.pausedSecondsRemaining))
-                        } else {
-                            Text(
-                                timerInterval: Date.now...max(Date.now.addingTimeInterval(1), context.state.endDate),
-                                countsDown: true
-                            )
-                        }
+                    if context.state.isPaused {
+                        Text(formatPausedTime(context.state.pausedSecondsRemaining))
+                            .font(.system(size: 30, weight: .thin, design: .rounded))
+                            .monospacedDigit()
+                            .foregroundStyle(.white)
+                            .padding(.trailing, 4)
+                    } else {
+                        Text(
+                            timerInterval: Date.now...max(Date.now.addingTimeInterval(1), context.state.endDate),
+                            countsDown: true
+                        )
+                        .font(.system(size: 30, weight: .thin, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(.white)
+                        .padding(.trailing, 4)
                     }
-                    .font(.system(size: 30, weight: .thin, design: .rounded))
-                    .monospacedDigit()
-                    .foregroundStyle(.white)
-                    .padding(.trailing, 4)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
                     HStack(spacing: 6) {
@@ -80,23 +82,27 @@ struct TimerLiveActivity: Widget {
                     .padding(.bottom, 6)
                 }
             } compactLeading: {
-                Image(systemName: context.attributes.habitIcon)
+                Image(systemName: context.attributes.habitIcon.isEmpty ? "timer" : context.attributes.habitIcon)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(habitColor(context.attributes.habitColorHex))
+                    .padding(.leading, 2)
             } compactTrailing: {
-                Group {
-                    if context.state.isPaused {
-                        Text(formatPausedTime(context.state.pausedSecondsRemaining))
-                    } else {
-                        Text(
-                            timerInterval: Date.now...max(Date.now.addingTimeInterval(1), context.state.endDate),
-                            countsDown: true
-                        )
-                    }
+                if context.state.isPaused {
+                    Text(formatPausedTime(context.state.pausedSecondsRemaining))
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(.white)
+                        .padding(.trailing, 2)
+                } else {
+                    Text(
+                        timerInterval: Date.now...max(Date.now.addingTimeInterval(1), context.state.endDate),
+                        countsDown: true
+                    )
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(.white)
+                    .padding(.trailing, 2)
                 }
-                .font(.system(size: 14, weight: .medium, design: .rounded))
-                .monospacedDigit()
-                .foregroundStyle(.white)
             } minimal: {
                 Image(systemName: context.attributes.habitIcon)
                     .font(.system(size: 12))
